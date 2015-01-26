@@ -20,6 +20,7 @@ import android.os.Parcelable;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.EdgeEffectCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
@@ -237,6 +238,7 @@ public class HorizontalListView extends AdapterView<ListAdapter> {
     private int centerX;
     private int itemWidth = -1;
     private int leftRightMargin = 0;
+    private int halfItemWidth;
 
     public HorizontalListView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -617,6 +619,7 @@ public class HorizontalListView extends AdapterView<ListAdapter> {
         if (itemWidth < 0) {
             itemWidth = getChildAt(0).getMeasuredWidth();
             leftRightMargin = centerX - (itemWidth >> 1);
+            halfItemWidth = itemWidth >> 1;
         }
         positionChildren(dx);
 
@@ -1425,7 +1428,9 @@ public class HorizontalListView extends AdapterView<ListAdapter> {
             return scroller.getCurrVelocity();
         }
     }
+
     private static final float TO_SCALE = 1.2f;
+
     /**
      * item的缩放
      */
@@ -1435,12 +1440,11 @@ public class HorizontalListView extends AdapterView<ListAdapter> {
             View view = getChildAt(i);
             int[] location = new int[2];
             view.getLocationOnScreen(location);
-            if ((centerX - (location[0] + (itemWidth>>1)) < itemWidth + mDividerWidth)
-                    || (location[0] + (itemWidth>>1) - centerX < itemWidth + mDividerWidth)) {
-                float scale = TO_SCALE - ((float) Math.abs(location[0] + (itemWidth>>1) - centerX) / (itemWidth + mDividerWidth) / 10) * 2;
-               ViewHelper.setScaleX(view, scale);
-               ViewHelper.setScaleY(view, scale);
-
+            if ((centerX - (location[0] + halfItemWidth) < itemWidth + mDividerWidth)
+                    || (location[0] + halfItemWidth - centerX < itemWidth + mDividerWidth)) {
+                float scale = TO_SCALE - ((float) Math.abs(location[0] + halfItemWidth - centerX) / (itemWidth + mDividerWidth) / 10) * 2;
+                ViewHelper.setScaleX(view, scale);
+                ViewHelper.setScaleY(view, scale);
             }
         }
     }
