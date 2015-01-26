@@ -31,6 +31,9 @@ import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.Scroller;
 
+
+import com.nineoldandroids.view.ViewHelper;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -637,6 +640,7 @@ public class HorizontalListView extends AdapterView<ListAdapter> {
             // Still in a fling so schedule the next frame
             ViewCompat.postOnAnimation(this, mDelayedLayout);
         }
+        scaleChild();
     }
 
     @Override
@@ -1421,5 +1425,25 @@ public class HorizontalListView extends AdapterView<ListAdapter> {
             return scroller.getCurrVelocity();
         }
     }
+    private static final float TO_SCALE = 1.2f;
+    /**
+     * item的缩放
+     */
+    private void scaleChild() {
+        int childCount = getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            View view = getChildAt(i);
+            int[] location = new int[2];
+            view.getLocationOnScreen(location);
+            if ((centerX - (location[0] + (itemWidth>>1)) < itemWidth + mDividerWidth)
+                    || (location[0] + (itemWidth>>1) - centerX < itemWidth + mDividerWidth)) {
+                float scale = TO_SCALE - ((float) Math.abs(location[0] + (itemWidth>>1) - centerX) / (itemWidth + mDividerWidth) / 10) * 2;
+               ViewHelper.setScaleX(view, scale);
+               ViewHelper.setScaleY(view, scale);
+
+            }
+        }
+    }
+
 }
 
